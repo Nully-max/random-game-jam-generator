@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godot Game Jam Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #4c1d95 0%, #3730a3 50%, #1e3a8a 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #e9d5ff;
+            font-size: 1.125rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        .empty-state p:first-child {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .empty-state p:last-child {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .theme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        .theme-title h2 {
+            color: #e9d5ff;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+        .theme-title h3 {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .badges {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-purple {
+            background: rgba(168, 85, 247, 0.3);
+            color: #e9d5ff;
+        }
+        .badge-blue {
+            background: rgba(59, 130, 246, 0.3);
+            color: #dbeafe;
+        }
+        .badge-pink {
+            background: rgba(236, 72, 153, 0.3);
+            color: #fce7f3;
+        }
+        .description {
+            color: #e9d5ff;
+            line-height: 1.6;
+        }
+        .time-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .time-header h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .tips-card {
+            background: linear-gradient(to right, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.2));
+            border-color: rgba(134, 239, 172, 0.3);
+        }
+        .tips-card h3 {
+            color: #bbf7d0;
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .tips-card ul {
+            color: #d9f99d;
+            list-style: none;
+        }
+        .tips-card li {
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(to right, #ec4899, #a855f7);
+            color: white;
+            font-weight: bold;
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+        }
+        .generate-btn:hover:not(:disabled) {
+            background: linear-gradient(to right, #db2777, #9333ea);
+            transform: scale(1.05);
+        }
+        .generate-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .footer p {
+            color: #e9d5ff;
+            font-size: 0.875rem;
+        }
+        .hidden {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .theme-title h3 {
+                font-size: 1.5rem;
+            }
+            .theme-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .badges {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ Godot Game Jam Generator</h1>
+            <p>Beginner-friendly challenges with detailed guidance</p>
+        </div>
+
+        <div id="emptyState" class="card">
+            <div class="empty-state">
+                <p>Ready to make a game?</p>
+                <p>Click below to get your custom challenge with theme, timeframe, and constraints!</p>
+            </div>
+        </div>
+
+        <div id="content" class="hidden">
+            <div class="card">
+                <div class="theme-header">
+                    <div class="theme-title">
+                        <h2>Your Theme</h2>
+                        <h3 id="themeName"></h3>
+                    </div>
+                    <div class="badges">
+                        <span id="themeDifficulty" class="badge badge-purple"></span>
+                        <span id="themeDimension" class="badge badge-blue"></span>
+                    </div>
+                </div>
+                <p id="themeDescription" class="description"></p>
+            </div>
+
+            <div class="card">
+                <div class="time-header">
+                    <span style="font-size: 1.5rem;">⏰</span>
+                    <div>
+                        <h2 style="color: #e9d5ff; font-size: 0.875rem; font-weight: 600; text-transform: uppercase;">Time Challenge</h2>
+                        <h3 id="timeInfo"></h3>
+                    </div>
+                </div>
+                <p id="timeDescription" class="description"></p>
+            </div>
+
+            <div class="card">
+                <div class="theme-header">
+                    <div class="theme-title">
+                        <h2>Extra Challenge</h2>
+                        <h3 id="constraintName"></h3>
+                    </div>
+                    <span id="constraintDifficulty" class="badge badge-pink"></span>
+                </div>
+                <p id="constraintDescription" class="description"></p>
+            </div>
+
+            <div class="card tips-card">
+                <h3>🎓 Beginner Tips:</h3>
+                <ul>
+                    <li>• Start with the core mechanic first, add everything else later</li>
+                    <li>• Use Godot built-in shapes for prototyping before making art</li>
+                    <li>• Test your game every 15-30 minutes to catch issues early</li>
+                    <li>• It is okay to skip features if you run out of time!</li>
+                </ul>
+            </div>
+        </div>
+
+        <button id="generateBtn" class="generate-btn">Generate My Challenge</button>
+
+        <div class="footer">
+            <p>Do not like this combo? Keep generating until you find one that excites you! 🎮</p>
+        </div>
+    </div>
+
+    <script>
+        var themes = [
+            { name: "One Button", description: "Your entire game is controlled with a single button press. Think timing, rhythm, or auto-movement games. Great for learning input handling!", difficulty: "Beginner", dimension: "2D" },
+            { name: "Growing", description: "Something in your game gets bigger over time. Could be your character, the world, or even UI elements. Practice scaling and collision detection.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Countdown", description: "Race against the clock! Perfect for learning timers and creating urgency. Could be a timer that gives you points or one you must avoid.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Collect and Avoid", description: "Classic arcade formula: collect good things, avoid bad things. Excellent for learning basic collision detection and scoring systems.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Day and Night", description: "The game changes between two states like light or dark, safe or dangerous. Great for learning simple game state management and visual effects.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Only 3 Colors", description: "Limit your entire game to just 3 colors. Teaches you creative problem-solving and makes art manageable. Very beginner-friendly!", difficulty: "Beginner", dimension: "2D" },
+            { name: "Stack It Up", description: "Build things vertically, like tower builders or stacking games. Learn about physics, positioning, and win or lose conditions.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Rewind", description: "Add a rewind mechanic to undo mistakes. Start simple with just position tracking. Great for learning arrays and state saving.", difficulty: "Intermediate", dimension: "2D" },
+            { name: "Gravity Flip", description: "Switch gravity direction with a button press. Fun way to learn Godot physics system and create interesting platformer puzzles.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Chain Reaction", description: "One action triggers many effects, like dominos. Practice signals, delayed actions, and satisfying cascading events.", difficulty: "Intermediate", dimension: "2D" },
+            { name: "Tiny World", description: "Everything happens in a very small play area. Makes scope manageable and forces creative level design. Can use pixel art!", difficulty: "Beginner", dimension: "2D" },
+            { name: "Point and Click", description: "Classic adventure game style - click to interact with objects. Perfect for learning mouse input and scene management.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Endless Runner", description: "Character moves automatically, you control jumping or dodging. Great for learning spawning, scrolling, and increasing difficulty.", difficulty: "Beginner", dimension: "2D" },
+            { name: "Two Worlds", description: "Switch between two parallel versions of the level. Learn scene management and teaching players to use their environment creatively.", difficulty: "Intermediate", dimension: "2D" },
+            { name: "Boss Battle", description: "Focus on one epic fight with phases. Learn health systems, attack patterns, and dramatic gameplay moments.", difficulty: "Intermediate", dimension: "2D or 3D" },
+            { name: "Roll the Ball", description: "Control a rolling sphere through obstacles. Perfect introduction to 3D physics, camera follow, and simple 3D level design.", difficulty: "Beginner", dimension: "3D" },
+            { name: "First Person Maze", description: "Navigate corridors from first-person view. Learn 3D movement, camera control, and spatial level design basics.", difficulty: "Beginner", dimension: "3D" },
+            { name: "Stack Blocks 3D", description: "Tower building in 3D space. Introduction to 3D physics, RigidBodies, and depth perception challenges.", difficulty: "Intermediate", dimension: "3D" },
+            { name: "Rhythm Game", description: "Hit notes to the beat! Learn audio timing, input buffering, and visual feedback. Can work in 2D or 3D.", difficulty: "Intermediate", dimension: "2D or 3D" },
+            { name: "Memory Match", description: "Flip cards to find pairs. Perfect for learning UI, arrays, randomization, and game state. Very beginner friendly!", difficulty: "Beginner", dimension: "2D" }
+        ];
+
+        var timeframes = [
+            { duration: "3 hours", description: "Ultra-sprint! Focus on ONE core mechanic only. Perfect for testing an idea.", emoji: "X" },
+            { duration: "6 hours", description: "Half-day jam. Build a simple prototype with basic art and one main feature.", emoji: "X" },
+            { duration: "12 hours", description: "Full day. Enough time for a complete mini-game with polish and sound.", emoji: "X" },
+            { duration: "24 hours", description: "Full game jam day. Create a complete experience with menu, levels, and juice!", emoji: "X" },
+            { duration: "48 hours", description: "Weekend jam. Time for multiple features, decent art, and proper playtesting.", emoji: "X" },
+            { duration: "72 hours", description: "Long weekend. Room for complexity, iteration, and making it feel great.", emoji: "X" },
+            { duration: "1 week", description: "Relaxed pace. Polish everything, add extras, and really nail the game feel.", emoji: "X" },
+            { duration: "2 weeks", description: "Mini-project timeline. Ambitious features, quality art, multiple levels possible.", emoji: "X" }
+        ];
+
+        var constraints = [
+            { name: "Use only geometric shapes", description: "No custom sprites - just squares, circles, triangles. Makes art super fast and forces gameplay focus!", difficulty: "Easy" },
+            { name: "No text allowed", description: "Teach through visuals and gameplay only. Great for learning visual communication and intuitive design.", difficulty: "Medium" },
+            { name: "Pixel art only", description: "Work at low resolution like 16x16 or 32x32 sprites. Makes art achievable and has retro charm.", difficulty: "Easy" },
+            { name: "Single screen game", description: "Everything happens on one screen with no scrolling. Keeps scope small and design tight.", difficulty: "Easy" },
+            { name: "No enemies", description: "Environmental hazards and puzzles only. Focus on level design and mechanics over combat.", difficulty: "Easy" },
+            { name: "Use free assets only", description: "Browse itch.io or OpenGameArt for everything. Learn asset integration and attribution.", difficulty: "Easy" },
+            { name: "Make it tutorial-free", description: "Game must be instantly understandable. Excellent practice in intuitive design and feedback.", difficulty: "Medium" },
+            { name: "Include a leaderboard", description: "Track and display high scores. Learn persistent data storage and UI layout.", difficulty: "Medium" },
+            { name: "Add controller support", description: "Make it playable with a gamepad. Learn Godot input system and accessibility.", difficulty: "Medium" },
+            { name: "Make it one-handed", description: "Control with mouse only or left hand only. Consider accessibility from the start.", difficulty: "Easy" }
+        ];
+
+        var emptyState = document.getElementById('emptyState');
+        var content = document.getElementById('content');
+        var generateBtn = document.getElementById('generateBtn');
+        var hasGenerated = false;
+
+        function generateJam() {
+            var randomTheme = themes[Math.floor(Math.random() * themes.length)];
+            var randomTime = timeframes[Math.floor(Math.random() * timeframes.length)];
+            var randomConstraint = constraints[Math.floor(Math.random() * constraints.length)];
+
+            document.getElementById('themeName').textContent = randomTheme.name;
+            document.getElementById('themeDifficulty').textContent = randomTheme.difficulty;
+            document.getElementById('themeDimension').textContent = randomTheme.dimension;
+            document.getElementById('themeDescription').textContent = randomTheme.description;
+
+            document.getElementById('timeInfo').textContent = randomTime.emoji + ' ' + randomTime.duration;
+            document.getElementById('timeDescription').textContent = randomTime.description;
+
+            document.getElementById('constraintName').textContent = randomConstraint.name;
+            document.getElementById('constraintDifficulty').textContent = randomConstraint.difficulty;
+            document.getElementById('constraintDescription').textContent = randomConstraint.description;
+
+            if (!hasGenerated) {
+                emptyState.classList.add('hidden');
+                content.classList.remove('hidden');
+                generateBtn.textContent = 'Generate New Challenge';
+                hasGenerated = true;
+            }
+        }
+
+        generateBtn.addEventListener('click', generateJam);
+    </script>
+</body>
+</html>
